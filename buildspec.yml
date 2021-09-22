@@ -10,7 +10,7 @@ phases:
   pre_build:
     commands:
       - export AWS_ACCOUNT_id="671687907357"
-      - export REPO_URL="${AWS_ACCOUNT_id}.dkr.ecr.eu-west-2.amazonaws.com/buddy-abroad-api"
+      - export REPO_URL="${AWS_ACCOUNT_id}.dkr.ecr.eu-west-2.amazonaws.com"
       - aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${REPO_URL}
       - export IMAGE="${REPO_URL}/buddy-abroad-api:1.0"
   build:
