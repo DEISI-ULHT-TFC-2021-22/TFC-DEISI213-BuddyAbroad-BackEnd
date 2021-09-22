@@ -82,7 +82,7 @@ class BuddyInfo(models.Model):
     earnings = models.FloatField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'buddy_info'
 
 
@@ -98,7 +98,7 @@ class BuddyMatchTourist(models.Model):
     buddy = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'buddy_match_tourist'
         unique_together = (('ordered_trip', 'buddy'),)
 
@@ -152,7 +152,7 @@ class Preferences(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'preferences'
 
 
@@ -161,7 +161,7 @@ class PreferencesUser(models.Model):
     user = models.IntegerField()
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'preferences_user'
 
 
@@ -170,7 +170,7 @@ class Roles(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'roles'
 
 
@@ -184,7 +184,7 @@ class Trips(models.Model):
     users = models.ForeignKey('Users', models.DO_NOTHING, db_column='users_id')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'trips'
 
 
@@ -195,7 +195,7 @@ class TripsDetails(models.Model):
     trip_id = models.ForeignKey('Trips', models.DO_NOTHING, db_column='trip_id')
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'trips_details'
 
 
@@ -204,7 +204,7 @@ class TripsImages(models.Model):
     trips_id = models.IntegerField(unique=True, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'trips_images'
 
 
@@ -213,7 +213,7 @@ class TuristInfo(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'turist_info'
 
 
@@ -224,5 +224,5 @@ class Users(models.Model):
     age = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'users'
