@@ -1,0 +1,26 @@
+version: 0.2
+phases:
+  install:
+    run-as: root
+    runtime-versions:
+      docker: 18
+    commands:
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    - export AWS_ACCOUNT_id="671687907357"
+    - export REPO_URL="${AWS_ACCOUNT_id}.dkr.ecr.eu-west-2.amazonaws.com/buddy-abroad-api"
+    - aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${REPO_URL}
+    - export IMAGE="${REPO_URL}/buddy-abroad-api:1.0"
+  build:
+    commands:
+      - docker build -t ${IMAGE} .
+      - docker push ${IMAGE}
+  post_build:
+    commands:
+      - printf '[{"name":"buddy-abroad-api", "imageUri":"%s"}]' ${IMAGE} > imagedefinitions.json
+artifacts:
+  files:
+    - imagedefinitions.json
+
+
