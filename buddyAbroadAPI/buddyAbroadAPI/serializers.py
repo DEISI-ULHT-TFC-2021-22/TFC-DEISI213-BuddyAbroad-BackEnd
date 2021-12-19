@@ -2,23 +2,18 @@ from rest_framework import serializers
 from .models import *
 
 
-class TuristInfoSerializer(serializers.ModelSerializer):
+class InterestsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TuristInfo
+        model = Interests
         fields = ('__all__')
-
 
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Users
-        fields = ('__all__')
+        fields = '__all__'
 
 class TripsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Trips
-        fields = ('__all__')
-
-class TripsDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TripsDetails
         fields = ('__all__')

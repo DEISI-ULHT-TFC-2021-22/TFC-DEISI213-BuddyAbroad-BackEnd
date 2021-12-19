@@ -21,10 +21,13 @@ env.read_env()
 from .models import *
 
 
-class Users(generics.ListCreateAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UserSerializer
-    name='list_users'
+class UsersAPI(generics.ListCreateAPIView):
+
+    @api_view(['GET'])
+    def get(request):
+        users_l = Users.objects.all()
+        user_serializer = UserSerializer(users_l, many=True)
+        return Response(user_serializer.data)
 
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -148,8 +151,6 @@ class Users(generics.ListCreateAPIView):
             return Response('Error: Incorrect username or password!')
 
 class TripsAPI(generics.ListCreateAPIView):
-
-
     test_param = openapi.Parameter('test', openapi.IN_QUERY, description="test manual param", type=openapi.TYPE_BOOLEAN)
     trips_response = openapi.Response('response description', TripsSerializers)
     @swagger_auto_schema(method='get',
@@ -202,20 +203,10 @@ class TripsAPI(generics.ListCreateAPIView):
         else:
             return JsonResponse("Bad Request", status=status.HTTP_400_BAD_REQUEST)
 
-    @api_view(['POST'])
-    def postTripDetails(request):
-        if request.method == 'POST':
-            data = JSONParser().parse(request)
-            trip_details_serializer = TripsDetailsSerializer(data=data)
 
-            if trip_details_serializer.is_valid():
-                trip_details_item_object = trip_details_serializer.save()
-                return JsonResponse(trip_details_serializer.data, status=status.HTTP_201_CREATED)
-
-            return JsonResponse(trip_details_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return JsonResponse("Bad Request", status=status.HTTP_400_BAD_REQUEST)
-
+class InterestsAPI(generics.ListCreateAPIView):
+    queryset = Interests.objects.all()
+    serializer_class = InterestsSerializer
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -227,5 +218,4 @@ def api_root(request, format=None):
         'documentation':reverse('schema-swagger-ui',request=request,format=format),
         'trips' : reverse('trips',request=request, format=format),
         'postTrips':reverse('post_trips',request=request,format=format),
-        'postTripsDetails': reverse('post_trips_details', request=request, format=format),
     })

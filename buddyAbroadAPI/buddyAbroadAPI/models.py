@@ -8,82 +8,32 @@
 from django.db import models
 
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
+class Interests(models.Model):
+    name = models.CharField(max_length=45, blank=True, null=True)
     class Meta:
         managed = False
-        db_table = 'auth_group'
+        db_table = 'Interests'
 
 
-class AuthGroupPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+class Languages(models.Model):
+    name = models.CharField(max_length=45, blank=True, null=True)
+    class Meta:
+        db_table = 'Languages'
+
+
+class Trips(models.Model):
+    name = models.CharField(max_length=45, blank=True, null=True)
+    description = models.CharField(max_length=45, blank=True, null=True)
+    rating = models.IntegerField(blank=True, null=True)
+    price = models.FloatField(blank=True, null=True)
+    location = models.CharField(max_length=45, blank=True, null=True)
+    details = models.CharField(max_length=45, blank=True, null=True)
+    maxsize = models.IntegerField(db_column='maxSize', blank=True, null=True)  # Field name made lowercase.
+    duration = models.IntegerField(blank=True, null=True)
+    guide = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
-class AuthUserGroups(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
-
-
-class BuddyInfo(models.Model):
-    name = models.CharField(max_length=100)
-    earnings = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'buddy_info'
+        db_table = 'Trips'
 
 
 class BuddyMatchTourist(models.Model):
@@ -93,76 +43,22 @@ class BuddyMatchTourist(models.Model):
     date = models.DateField(blank=True, null=True)
     duration = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=100, blank=True, null=True)
-    ordered_trip = models.ForeignKey('Trips', models.DO_NOTHING, blank=True, null=True)
     participants = models.CharField(max_length=100, blank=True, null=True)
     buddy = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = True
         db_table = 'buddy_match_tourist'
-        unique_together = (('ordered_trip', 'buddy'),)
 
 
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+class Messages(models.Model):
+    message = models.CharField(max_length=400, blank=True, null=True)
+    sender = models.ForeignKey('Users', models.DO_NOTHING,related_name="sender", db_column='sender', blank=True, null=True)
+    recipient = models.ForeignKey('Users', models.DO_NOTHING, db_column='recipient', blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
-
-
-class Preferences(models.Model):
-    name = models.CharField(max_length=100, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'preferences'
-
-
-class PreferencesUser(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user = models.IntegerField()
-
-    class Meta:
-        managed = True
-        db_table = 'preferences_user'
+        db_table = 'messages'
+        unique_together = (('sender', 'recipient'),)
 
 
 class Roles(models.Model):
@@ -170,59 +66,43 @@ class Roles(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING)
 
     class Meta:
-        managed = True
         db_table = 'roles'
 
 
-class Trips(models.Model):
-    name = models.CharField(max_length=100, blank=True, null=True)
-    rating = models.IntegerField(blank=True, null=True)
-    principal_image = models.CharField(max_length=322, blank=True, null=True)
-    status = models.CharField(max_length=100, blank=True, null=True)
-    description = models.CharField(max_length=100, blank=True, null=True)
-    price = models.FloatField(blank=True, null=True)
-    users = models.ForeignKey('Users', models.DO_NOTHING, db_column='users_id')
+class UserTrips(models.Model):
+    paidprice = models.FloatField(db_column='paidPrice', blank=True, null=True)  # Field name made lowercase.
+    date = models.DateField(blank=True, null=True)
+    time = models.TimeField(blank=True, null=True)
+    status = models.CharField(max_length=45, blank=True, null=True)
+    groupsize = models.IntegerField(db_column='groupSize', blank=True, null=True)  # Field name made lowercase.
+    user_tripscol = models.CharField(max_length=45, blank=True, null=True)
+    guide = models.ForeignKey('Users',models.DO_NOTHING)
+    tourist = models.ForeignKey('Users',models.DO_NOTHING,related_name="tourist")
+    reference = models.ForeignKey(Trips, models.DO_NOTHING)
 
     class Meta:
-        managed = True
-        db_table = 'trips'
-
-
-class TripsDetails(models.Model):
-    duration = models.IntegerField(blank=True, null=True, db_column='duration')
-    group_size = models.IntegerField(blank=True, null=True, db_column='group_size')
-    location = models.CharField(max_length=100, blank=True, null=True, db_column='location')
-    trip_id = models.ForeignKey('Trips', models.DO_NOTHING, db_column='trip_id')
-
-    class Meta:
-        managed = True
-        db_table = 'trips_details'
-
-
-class TripsImages(models.Model):
-    image = models.CharField(max_length=100)
-    trips_id = models.IntegerField(unique=True, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'trips_images'
-
-
-class TuristInfo(models.Model):
-    age = models.IntegerField(blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'turist_info'
+        db_table = 'user_trips'
 
 
 class Users(models.Model):
-    name = models.TextField(blank=True, null=True)
-    image = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    image = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(max_length=100)
-    age = models.IntegerField(blank=True, null=True)
+    age = models.IntegerField()
+    rating = models.IntegerField(blank=True, null=True)
+    tourcount = models.IntegerField(db_column='tourCount', blank=True, null=True)  # Field name made lowercase.
+    guide = models.CharField(max_length=45, blank=True, null=True)
+    interests = models.ManyToManyField(Interests)
+
 
     class Meta:
-        managed = True
         db_table = 'users'
+
+
+
+class UsersLanguages(models.Model):
+    users = models.ForeignKey(Users, models.DO_NOTHING)
+    languages = models.ForeignKey(Languages, models.DO_NOTHING, db_column='Languages_id')  # Field name made lowercase.
+
+    class Meta:
+        db_table = 'users_languages'

@@ -15,14 +15,14 @@ schema_view = get_schema_view(
     public=True,
 )
 urlpatterns = [
-    path('users/',Users.as_view(),name='users'),
-    path('createUser/',Users.create_user,name='createUser'),
-    path('confirmAccount/',Users.confirm_sign_up,name='confirm_sign_up'),
-    path('login/',Users.login_auth,name='loginAuth'),
+    path('users/',UsersAPI.get,name='users'),
+    path('createUser/',UsersAPI.create_user,name='createUser'),
+    path('confirmAccount/',UsersAPI.confirm_sign_up,name='confirm_sign_up'),
+    path('login/',UsersAPI.login_auth,name='loginAuth'),
     path('trips/',TripsAPI.get,name='trips'),
     path('postTrips/',TripsAPI.postTrip,name='post_trips'),
-    path('postTripsDetails/',TripsAPI.postTripDetails,name='post_trips_details'),
     path('getTrip/<int:id>',TripsAPI.get_trip_by_id),
+    path('interests/',InterestsAPI.as_view()),
     path('', views.api_root),
     path('swagger/',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
 ]
