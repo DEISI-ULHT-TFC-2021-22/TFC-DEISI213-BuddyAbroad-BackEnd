@@ -43,17 +43,15 @@ class UsersAPI(generics.ListCreateAPIView):
     @api_view(['POST'])
     def create_user(request):
         # user is created in DataBase
-        data={
-            'name': request.data['name'],
-            'image' : request.data['image'],
-            'description' : request.data['description'],
-            'age' : request.data['age']
-        }
-        user = UserSerializer(data=data)
+        user = UserSerializer(data=request.data)
 
         if user.is_valid():
             user.save() # Save User on DataBase
-            boto3.setup_default_session(region_name='eu-west-2')
+
+            for intrs in request.data['interests']:
+                new_int = Interests.objects.get(name=intrs['name'])
+                user.interests.add(new_int)
+            '''boto3.setup_default_session(region_name='eu-west-2')
             client = boto3.client('cognito-idp')
             try:
                 response = client.sign_up(
@@ -84,7 +82,10 @@ class UsersAPI(generics.ListCreateAPIView):
             except client.exceptions.ResourceNotFoundException:
                 return Response('Error:Resource Not Found!')
             except client.exceptions.CodeDeliveryFailureException:
-                return Response('Error:Code has not delivery!')
+                return Response('Error:Code has not delivery!')'''
+            return JsonResponse({
+                "oka":"edededde"
+            })
         else:
             return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
 

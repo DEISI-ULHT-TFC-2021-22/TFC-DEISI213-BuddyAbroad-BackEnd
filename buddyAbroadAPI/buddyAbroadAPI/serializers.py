@@ -9,6 +9,10 @@ class InterestsSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
+    interests = InterestsSerializer(
+        many = True,
+        read_only = True
+    )
     class Meta:
         model = Users
         fields = '__all__'
