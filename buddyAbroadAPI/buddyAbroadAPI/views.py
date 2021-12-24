@@ -48,9 +48,7 @@ class UsersAPI(generics.ListCreateAPIView):
         if user.is_valid():
             user.save() # Save User on DataBase
 
-            for intrs in request.data['interests']:
-                new_int = Interests.objects.get(name=intrs['name'])
-                user.interests.add(new_int)
+            return Response(user.data, status=status.HTTP_201_CREATED)
             '''boto3.setup_default_session(region_name='eu-west-2')
             client = boto3.client('cognito-idp')
             try:
