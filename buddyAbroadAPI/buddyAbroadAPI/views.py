@@ -13,6 +13,7 @@ from environs import Env
 # Documentation
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import get_object_or_404
 
 
 env = Env()
@@ -21,71 +22,84 @@ env.read_env()
 from .models import *
 
 
-class UsersAPI(generics.ListCreateAPIView):
+class UsersAPI(APIView):
 
-    @api_view(['GET'])
-    def get(request):
-        users_l = Users.objects.all()
-        user_serializer = UserSerializer(users_l, many=True)
-        return Response(user_serializer.data)
+    '''def get(self,request):
+        users = Users.objects.all()
+        users_serializer = UserSerializer(users, many=True)
+        return Response(users_serializer.data,status=status.HTTP_201_CREATED)'''
 
-    @swagger_auto_schema(method='post', request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'name': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-            'image': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-            'age': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-            'email': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-            'password': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
-        }
-    ))
-    @api_view(['POST'])
-    def create_user(request):
-        # user is created in DataBase
-        user = UserSerializer(data=request.data)
 
-        if user.is_valid():
-            user.save() # Save User on DataBase
+    @api_view(['GET','POST'])
+    def users_list_create_delete(request):
 
-            return Response(user.data, status=status.HTTP_201_CREATED)
-            '''boto3.setup_default_session(region_name='eu-west-2')
-            client = boto3.client('cognito-idp')
-            try:
-                response = client.sign_up(
-                    ClientId=env.str('AWS_CLIENT_ID'),
-                    Username=request.data['email'],
-                    Password=request.data['password'],
-                    UserAttributes=[
-                        {
-                            'Name': "name",
-                            'Value': request.data['name']
-                        },
-                        {
-                            'Name': "email",
-                            'Value': request.data['email']
-                        }
-                    ]
-                )
-                return Response(
-                    {
-                        'MSG' : 'User created!',
-                        'response' : response
-                    }
-                )
-            except client.exceptions.InvalidPasswordException:
-                return Response('Error:Invalid Password! Password must have length 8 with numbers and special characters')
-            except client.exceptions.UsernameExistsException:
-                return Response('Error:Username already exists!')
-            except client.exceptions.ResourceNotFoundException:
-                return Response('Error:Resource Not Found!')
-            except client.exceptions.CodeDeliveryFailureException:
-                return Response('Error:Code has not delivery!')'''
-            return JsonResponse({
-                "oka":"edededde"
-            })
-        else:
-            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.method == 'GET':
+            # Listing all the users from RDS
+            users = Users.objects.all()
+            users_serializer = UserSerializer(users, many=True)
+            return Response(users_serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == 'POST':
+            # Create a new user
+             user = UserSerializer(data=request.data)
+             if user.is_valid():
+                 user.save() # Save User on DataBase
+                 return Response(user.data, status=status.HTTP_201_CREATED)
+                 '''boto3.setup_default_session(region_name='eu-west-2')
+                 client = boto3.client('cognito-idp')
+                 try:
+                     response = client.sign_up(
+                         ClientId=env.str('AWS_CLIENT_ID'),
+                         Username=request.data['email'],
+                         Password=request.data['password'],
+                         UserAttributes=[
+                             {
+                                 'Name': "name",
+                                 'Value': request.data['name']
+                             },
+                             {
+                                 'Name': "email",
+                                 'Value': request.data['email']
+                             }
+                         ]
+                     )
+                     return Response(
+                         {
+                             'MSG' : 'User created!',
+                             'response' : response
+                         }
+                     )
+                 except client.exceptions.InvalidPasswordException:
+                     return Response('Error:Invalid Password! Password must have length 8 with numbers and special characters')
+                 except client.exceptions.UsernameExistsException:
+                     return Response('Error:Username already exists!')
+                 except client.exceptions.ResourceNotFoundException:
+                     return Response('Error:Resource Not Found!')
+                 except client.exceptions.CodeDeliveryFailureException:
+                     return Response('Error:Code has not delivery!')'''
+             else:
+                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @api_view(['PUT','GET','DELETE'])
+    def filter_updateUser(request,id):
+        if request.method == 'PUT':
+            if id:
+                user = Users.objects.get(pk=id)
+                user_serializer = UserSerializer(user,data=request.data)
+                if user_serializer.is_valid():
+
+                    # Updating object
+                    updated_user = user_serializer.save()
+
+                    updated_user_serializer = UserSerializer(updated_user)
+
+                    return Response(updated_user_serializer.data,status=200)
+                return Response(user_serializer.errors,status=400)
+            return Response('Missing ID',status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'GET':
+            user = Users.objects.get(pk=id)
+            if user is not None:
+                user_serializer = UserSerializer(user)
+                return Response(user_serializer.data, status=200)
 
 
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
@@ -211,7 +225,7 @@ class InterestsAPI(generics.ListCreateAPIView):
 def api_root(request, format=None):
     return Response({
         'Users': reverse('users', request=request, format=format),
-        'Create User':reverse('createUser',request=request, format=format),
+        #'Create User':reverse('createUser',request=request, format=format),
         'Confirm Account': reverse('confirm_sign_up', request=request, format=format),
         'Login': reverse('loginAuth', request=request, format=format),
         'documentation':reverse('schema-swagger-ui',request=request,format=format),

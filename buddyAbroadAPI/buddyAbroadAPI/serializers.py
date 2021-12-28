@@ -25,8 +25,16 @@ class UserSerializer(serializers.ModelSerializer):
         for interest_data in interests_data:
             interest_data_obj = Interests.objects.get(name=interest_data['name'])
             user.interests.add(interest_data_obj)
-
         return user
+
+    def update(self,instance,validated_data):
+        interests_data = validated_data.pop('interests')
+
+        # Update all fields excluding interests
+        instance.name = validated_data.get('name',instance.name)
+        instance.save()
+
+        return instance
 
 
 class TripsSerializers(serializers.ModelSerializer):
