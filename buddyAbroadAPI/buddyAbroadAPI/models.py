@@ -11,7 +11,6 @@ from django.db import models
 class Interests(models.Model):
     name = models.CharField(max_length=45, blank=True, null=True)
     class Meta:
-        managed = False
         db_table = 'Interests'
 
 
@@ -93,16 +92,10 @@ class Users(models.Model):
     tourcount = models.IntegerField(db_column='tourCount', blank=True, null=True)  # Field name made lowercase.
     guide = models.CharField(max_length=45, blank=True, null=True)
     interests = models.ManyToManyField(Interests)
+    languages = models.ManyToManyField(Languages)
 
 
     class Meta:
         db_table = 'users'
 
 
-
-class UsersLanguages(models.Model):
-    users = models.ForeignKey(Users, models.DO_NOTHING)
-    languages = models.ForeignKey(Languages, models.DO_NOTHING, db_column='Languages_id')  # Field name made lowercase.
-
-    class Meta:
-        db_table = 'users_languages'

@@ -9,22 +9,39 @@ class InterestsSerializer(serializers.ModelSerializer):
             'name'
         ]
 
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Languages
+        fields = [
+            'name'
+        ]
+
+
 class UserSerializer(serializers.ModelSerializer):
 
-    interests = InterestsSerializer(
-        many = True
-    )
+    interests,languages = InterestsSerializer(many = True),LanguageSerializer(many=True)
 
     class Meta:
         model = Users
         fields = '__all__'
 
     def create(self, validated_data):
+
         interests_data = validated_data.pop('interests')
+        languages_data = validated_data.pop('languages')
+
         user = Users.objects.create(**validated_data)
+
+        # Create interests
         for interest_data in interests_data:
             interest_data_obj = Interests.objects.get(name=interest_data['name'])
             user.interests.add(interest_data_obj)
+
+        # Create languages
+        for lang_data in languages_data:
+            lang_data_obj = Languages.objects.get(name=lang_data['name'])
+            user.languages.add(lang_data_obj)
+
         return user
 
     def update(self,instance,validated_data):
