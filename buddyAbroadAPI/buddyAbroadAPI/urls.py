@@ -16,6 +16,9 @@ schema_view = get_schema_view(
 )
 urlpatterns = [
     path('users/',UsersAPI.users_list_create_delete,name='users'),
+
+    #Translate
+    path('translate/',AwsTranslate.translate,name="translate"),
     path('users/<int:id>', UsersAPI.filter_updateUser),
     path('confirmAccount/',UsersAPI.confirm_sign_up,name='confirm_sign_up'),
     path('login/',UsersAPI.login_auth,name='loginAuth'),

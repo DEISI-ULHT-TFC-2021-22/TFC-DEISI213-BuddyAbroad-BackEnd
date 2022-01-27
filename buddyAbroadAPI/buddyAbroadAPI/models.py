@@ -84,7 +84,11 @@ class UserTrips(models.Model):
 
 
 class Users(models.Model):
-    name = models.CharField(max_length=100, blank=True, null=True)
+    f_name = models.CharField(max_length=100, blank=True, null=True)
+    l_name = models.CharField(max_length=100, blank=True, null=True)
+    email = models.CharField(max_length=100, blank=True, null=True)
+    dob = models.CharField(max_length=100, blank=True, null=True)
+    phone = models.CharField(max_length=100, blank=True, null=True)
     image = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(max_length=100)
     age = models.IntegerField()
