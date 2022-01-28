@@ -221,25 +221,10 @@ class InterestsAPI(generics.ListCreateAPIView):
     queryset = Interests.objects.all()
     serializer_class = InterestsSerializer
 
-class AwsTranslate():
-    @api_view(['POST'])
-    def translate(request):
-        translate = boto3.client('translate')
-
-        result = translate.translate_text(
-            Text=request.data['text'],
-            SourceLanguageCode=request.data['sourceLanguageCode'],
-            TargetLanguageCode=request.data['targetLanguageCode']
-        )
-
-        return JsonResponse(result)
-
-
 
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
         'Users': reverse('users', request=request, format=format),
-        'translate' : reverse('translate', request=request, format=format),
         'documentation':reverse('schema-swagger-ui',request=request,format=format),
     })
