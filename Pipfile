@@ -10,6 +10,7 @@ django = "*"
 djangorestframework = "*"
 boto3 = "*"
 drf-yasg = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
