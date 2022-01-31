@@ -35,6 +35,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 CORS_ORIGIN_WHITELIST = ('http://18.171.19.26/ ',)
 
+
 # Application definition
 
 INSTALLED_APPS = [
