@@ -31,7 +31,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['*']
+CORS_ORIGIN_WHITELIST = ('http://18.171.19.26/ ',)
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+]
 # Application definition
 
 INSTALLED_APPS = [

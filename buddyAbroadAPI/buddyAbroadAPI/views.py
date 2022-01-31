@@ -163,7 +163,9 @@ class UsersAPI(APIView):
         except client.exceptions.NotAuthorizedException:
             return Response('Error: Incorrect username or password!')
 
+
 class TripsAPI(generics.ListCreateAPIView):
+
     test_param = openapi.Parameter('test', openapi.IN_QUERY, description="test manual param", type=openapi.TYPE_BOOLEAN)
     trips_response = openapi.Response('response description', TripsSerializers)
     @swagger_auto_schema(method='get',
