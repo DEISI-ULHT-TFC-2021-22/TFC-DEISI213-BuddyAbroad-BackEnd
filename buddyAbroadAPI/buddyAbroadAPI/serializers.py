@@ -9,6 +9,7 @@ class InterestsSerializer(serializers.ModelSerializer):
             'name'
         ]
 
+
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Languages

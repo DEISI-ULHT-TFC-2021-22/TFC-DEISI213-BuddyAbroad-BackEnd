@@ -10,12 +10,14 @@ from django.db import models
 
 class Interests(models.Model):
     name = models.CharField(max_length=45, blank=True, null=True)
+
     class Meta:
         db_table = 'Interests'
 
 
 class Languages(models.Model):
     name = models.CharField(max_length=45, blank=True, null=True)
+
     class Meta:
         db_table = 'Languages'
 
@@ -84,19 +86,17 @@ class UserTrips(models.Model):
 
 
 class Users(models.Model):
-    f_name = models.CharField(max_length=100, blank=True, null=True)
-    l_name = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
-    dob = models.CharField(max_length=100, blank=True, null=True)
-    phone = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
+    dob = models.CharField(max_length=100)
+    phone = models.CharField(max_length=50)
     image = models.CharField(max_length=200, blank=True, null=True)
-    description = models.CharField(max_length=100)
-    age = models.IntegerField()
+    description = models.CharField(max_length=100, blank=True, null=True)
     rating = models.IntegerField(blank=True, null=True)
     tourcount = models.IntegerField(db_column='tourCount', blank=True, null=True)  # Field name made lowercase.
     guide = models.CharField(max_length=45, blank=True, null=True)
-    interests = models.ManyToManyField(Interests)
-    languages = models.ManyToManyField(Languages)
+    interests = models.ManyToManyField(Interests, blank=True)
+    languages = models.ManyToManyField(Languages, blank=True)
 
 
     class Meta:
