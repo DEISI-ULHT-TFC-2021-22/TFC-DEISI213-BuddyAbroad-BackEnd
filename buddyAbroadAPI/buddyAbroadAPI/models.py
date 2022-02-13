@@ -95,9 +95,8 @@ class Users(models.Model):
     rating = models.IntegerField(blank=True, null=True)
     tourcount = models.IntegerField(db_column='tourCount', blank=True, null=True)  # Field name made lowercase.
     guide = models.CharField(max_length=45, blank=True, null=True)
-    interests = models.ManyToManyField(Interests, blank=True)
-    languages = models.ManyToManyField(Languages, blank=True)
-
+    interests = models.ManyToManyField(Interests, blank=True, null=True)
+    languages = models.ManyToManyField(Languages, blank=True, null=True)
 
     class Meta:
         db_table = 'users'

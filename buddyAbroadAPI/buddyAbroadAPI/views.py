@@ -252,4 +252,5 @@ def api_root(request, format=None):
     return Response({
         'Users': reverse('users', request=request, format=format),
         'documentation': reverse('schema-swagger-ui', request=request, format=format),
+        'Signup': reverse('sign_up', request=request, format=format),
     })
