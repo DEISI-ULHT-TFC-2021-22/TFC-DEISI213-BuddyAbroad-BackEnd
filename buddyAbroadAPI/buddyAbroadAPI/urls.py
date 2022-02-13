@@ -19,7 +19,7 @@ urlpatterns = [
     path('users/<int:id>', UsersAPI.filter_updateUser),
     path('signup/',UsersAPI.sign_up,name='sign_up'),
     path('confirmAccount/',UsersAPI.confirm_sign_up,name='confirm_sign_up'),
-    path('login/',UsersAPI.login_auth,name='loginAuth'),
+    path('login/',UsersAPI.login_auth,name='login_auth'),
     path('trips/',TripsAPI.get,name='trips'),
     path('postTrips/',TripsAPI.postTrip,name='post_trips'),
     path('getTrip/<int:id>',TripsAPI.get_trip_by_id),
