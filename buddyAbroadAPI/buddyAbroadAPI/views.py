@@ -80,12 +80,19 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
+        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
+
+        new_digest = hmac.new(key, msg, hashlib.sha256).digest()
+        SECRET_HASH = base64.b64encode(new_digest).decode()
+
         try:
             # Add user to pool
             sign_up_response = client.sign_up(
                 ClientId=env.str('AWS_CLIENT_ID'),
                 Username=request.data['email'],
                 Password=request.data['password'],
+                SecretHash=SECRET_HASH,
                 UserAttributes=[
                     {
                         'Name': "email",
@@ -124,15 +131,16 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        '''key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
         msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
 
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
-        SECRET_HASH = base64.b64encode(new_digest).decode()'''
+        SECRET_HASH = base64.b64encode(new_digest).decode()
 
         try:
             response = client.confirm_sign_up(
                 ClientId=env.str('AWS_CLIENT_ID'),
+                SecretHash=SECRET_HASH,
                 Username=request.data['email'],
                 ConfirmationCode=request.data['code'],
             )
@@ -160,11 +168,11 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        '''key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
         msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
 
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
-        SECRET_HASH = base64.b64encode(new_digest).decode()'''
+        SECRET_HASH = base64.b64encode(new_digest).decode()
 
         try:
             response = client.initiate_auth(
