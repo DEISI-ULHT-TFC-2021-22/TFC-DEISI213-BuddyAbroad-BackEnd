@@ -253,4 +253,6 @@ def api_root(request, format=None):
         'Users': reverse('users', request=request, format=format),
         'documentation': reverse('schema-swagger-ui', request=request, format=format),
         'Signup': reverse('sign_up', request=request, format=format),
+        'Confirm Signup': reverse('confirm_sign_up', request=request, format=format),
+        'Login': reverse('login_auth', request=request, format=format),
     })
