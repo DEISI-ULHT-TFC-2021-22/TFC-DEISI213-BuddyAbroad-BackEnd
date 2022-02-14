@@ -168,12 +168,6 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
-        msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
-
-        new_digest = hmac.new(key, msg, hashlib.sha256).digest()
-        SECRET_HASH = base64.b64encode(new_digest).decode()
-
         try:
             response = client.initiate_auth(
                     ClientId=env.str('AWS_CLIENT_ID'),
