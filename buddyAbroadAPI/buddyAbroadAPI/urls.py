@@ -24,6 +24,7 @@ urlpatterns = [
     path('postTrips/',TripsAPI.postTrip,name='post_trips'),
     path('getTrip/<int:id>',TripsAPI.get_trip_by_id),
     path('interests/',InterestsAPI.as_view()),
+    path('translate/',AwsTranslate.translate,name='translate'),
     path('', views.api_root),
     path('swagger/',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
 ]
