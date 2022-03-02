@@ -47,10 +47,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self,instance,validated_data):
         interests_data = validated_data.pop('interests')
+        languages_data = validated_data.pop('languages')
 
         # Update all fields excluding interests
         instance.name = validated_data.get('name',instance.name)
         instance.save()
+
+        for interest_data in interests_data:
+            instance.interests_data.add(interest_data)
+
+        for language_data in languages_data:
+            instance.languages_data.add(language_data)
 
         return instance
 

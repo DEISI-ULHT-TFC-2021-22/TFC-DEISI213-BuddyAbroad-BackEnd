@@ -34,7 +34,7 @@ class UsersAPI(APIView):
     def users_list_create_delete(request):
 
         if request.method == 'GET':
-            # Listing all the users from RDS
+             # Listing all the users from RDS
             users = Users.objects.all()
             users_serializer = UserSerializer(users, many=True)
             return Response(users_serializer.data, status=status.HTTP_201_CREATED)
@@ -48,7 +48,7 @@ class UsersAPI(APIView):
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['PUT', 'GET', 'DELETE'])
-    def filter_updateUser(request, id):
+    def filter_update_user(request, id):
         if request.method == 'PUT':
             if id:
                 user = Users.objects.get(pk=id)
@@ -80,7 +80,7 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        key = bytes(env.str('APP_CLIENT_SECRET'), "utf-8")
         msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
 
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
@@ -100,7 +100,7 @@ class UsersAPI(APIView):
                     },
                     {
                         'Name': "name",
-                        'Value': "joao"
+                        'Value': request.data['name']
                     }
                 ])
 
@@ -131,7 +131,7 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        key = bytes(env.str('APP_CLIENT_SECRET'), "utf-8")
         msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
 
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
@@ -168,7 +168,7 @@ class UsersAPI(APIView):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
 
-        key = bytes('1rd0akeoav604c8rckjf5gmjtj5tn29m377l0atecjvv3vfp6lhv', "utf-8")
+        key = bytes(env.str('APP_CLIENT_SECRET'), "utf-8")
         msg = bytes(request.data['email'] + env.str('AWS_CLIENT_ID'), "utf-8")
 
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
