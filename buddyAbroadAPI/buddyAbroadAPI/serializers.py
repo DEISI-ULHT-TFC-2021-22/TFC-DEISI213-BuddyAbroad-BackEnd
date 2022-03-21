@@ -20,7 +20,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    interests,languages = InterestsSerializer(many = True),LanguageSerializer(many=True)
+    interests,languages = InterestsSerializer(many=True),LanguageSerializer(many=True)
 
     class Meta:
         model = Users
@@ -49,15 +49,17 @@ class UserSerializer(serializers.ModelSerializer):
         interests_data = validated_data.pop('interests')
         languages_data = validated_data.pop('languages')
 
-        # Update all fields excluding interests
-        instance.name = validated_data.get('name',instance.name)
-        instance.save()
+        instance = super().update(instance,validated_data)
+        instance.interests.clear()
+        instance.languages.clear()
 
         for interest_data in interests_data:
-            instance.interests_data.add(interest_data)
+            interest_data_obj = Interests.objects.get(name=interest_data['name'])
+            instance.interests.add(interest_data_obj)
 
         for language_data in languages_data:
-            instance.languages_data.add(language_data)
+            language_data_obj = Languages.objects.get(name=language_data['name'])
+            instance.languages.add(language_data_obj)
 
         return instance
 
@@ -65,4 +67,4 @@ class UserSerializer(serializers.ModelSerializer):
 class TripsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Trips
-        fields = ('__all__')
+        fields = '__all__'

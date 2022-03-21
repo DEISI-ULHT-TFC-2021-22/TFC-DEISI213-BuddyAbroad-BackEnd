@@ -52,14 +52,12 @@ class UsersAPI(APIView):
         if request.method == 'PUT':
             if id:
                 user = Users.objects.get(pk=id)
-                user_serializer = UserSerializer(user, data=request.data)
+                user_serializer = UserSerializer(instance=user, data=request.data)
                 if user_serializer.is_valid():
                     # Updating object
-                    updated_user = user_serializer.save()
+                    user_serializer.save()
 
-                    updated_user_serializer = UserSerializer(updated_user)
-
-                    return Response(updated_user_serializer.data, status=200)
+                    return Response(user_serializer.data, status=200)
                 return Response(user_serializer.errors, status=400)
             return Response('Missing ID', status=status.HTTP_400_BAD_REQUEST)
         elif request.method == 'GET':
