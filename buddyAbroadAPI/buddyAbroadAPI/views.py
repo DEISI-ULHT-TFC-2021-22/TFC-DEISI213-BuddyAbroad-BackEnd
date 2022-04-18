@@ -1,6 +1,5 @@
 from botocore.exceptions import ClientError
 from django.http import JsonResponse
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
@@ -16,7 +15,6 @@ from environs import Env
 # Documentation
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from django.shortcuts import get_object_or_404
 
 env = Env()
 env.read_env()
@@ -25,16 +23,12 @@ from .models import *
 
 
 class UsersAPI(APIView):
-    '''def get(self,request):
-        users = Users.objects.all()
-        users_serializer = UserSerializer(users, many=True)
-        return Response(users_serializer.data,status=status.HTTP_201_CREATED)'''
 
     @api_view(['GET', 'POST'])
-    def users_list_create_delete(request):
+    def users_list_create(request):
 
         if request.method == 'GET':
-             # Listing all the users from RDS
+            # Listing all the users from RDS
             users = Users.objects.all()
             users_serializer = UserSerializer(users, many=True)
             return Response(users_serializer.data, status=status.HTTP_201_CREATED)
@@ -47,8 +41,8 @@ class UsersAPI(APIView):
             else:
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @api_view(['PUT', 'GET', 'DELETE'])
-    def filter_update_user(request, id):
+    @api_view(['GET', 'PUT', 'DELETE'])
+    def user_get_update_delete(request, id):
         if request.method == 'PUT':
             if id:
                 user = Users.objects.get(pk=id)
@@ -62,6 +56,23 @@ class UsersAPI(APIView):
             return Response('Missing ID', status=status.HTTP_400_BAD_REQUEST)
         elif request.method == 'GET':
             user = Users.objects.get(pk=id)
+            if user is not None:
+                user_serializer = UserSerializer(user)
+                return Response(user_serializer.data, status=200)
+        elif request.method == 'DELETE':
+            user = Users.objects.get(pk=id)
+            operation = user.delete()
+            data = {}
+            if operation:
+                data['success'] = 'delete successful'
+            else:
+                data['failure'] = 'delete failed'
+            return Response(data=data)
+
+    @api_view(['GET'])
+    def get_user_by_email(request, email):
+        if request.method == 'GET':
+            user = Users.objects.get(email=email)
             if user is not None:
                 user_serializer = UserSerializer(user)
                 return Response(user_serializer.data, status=200)
@@ -174,17 +185,17 @@ class UsersAPI(APIView):
 
         try:
             response = client.initiate_auth(
-                    ClientId=env.str('AWS_CLIENT_ID'),
-                    AuthFlow='USER_PASSWORD_AUTH',
-                    AuthParameters={
-                        'USERNAME': request.data['email'],
-                        'PASSWORD': request.data['password'],
-                        'SECRET_HASH': SECRET_HASH
-                    },
+                ClientId=env.str('AWS_CLIENT_ID'),
+                AuthFlow='USER_PASSWORD_AUTH',
+                AuthParameters={
+                    'USERNAME': request.data['email'],
+                    'PASSWORD': request.data['password'],
+                    'SECRET_HASH': SECRET_HASH
+                },
             )
             return Response({
-                    'MSG': 'User Confirmed',
-                    'response': response,
+                'MSG': 'User Confirmed',
+                'response': response,
             })
         except client.exceptions.UserNotFoundException:
             return Response('Error: User Not Found!')
@@ -202,7 +213,7 @@ class TripsAPI(generics.ListCreateAPIView):
                          manual_parameters=[test_param],
                          responses={200: trips_response})
     @api_view(['GET'])
-    def get(request):
+    def get_trips(request):
         trips = Trips.objects.all()
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('s3')
@@ -220,28 +231,23 @@ class TripsAPI(generics.ListCreateAPIView):
 
     @api_view(['GET'])
     def get_trip_by_id(request, id):
-        if id:
-            trips = Trips.objects.all().filter(pk=id)
-            if len(trips) > 0:
-                trips_serializer = TripsSerializers(trips, many=True)
-                return Response(trips_serializer.data)
-            else:
-                return Response({
-                    'msg': 'Empty Set!'
-                })
+        trips = Trips.objects.all().filter(pk=id)
+        if len(trips) > 0:
+            trips_serializer = TripsSerializers(trips, many=True)
+            return Response(trips_serializer.data)
         else:
             return Response({
-                'msg': 'Error:Must provide a valid id!'
+                'msg': 'Não existem trips que correspondem com o id ' + str(id)
             })
 
     @api_view(['POST'])
-    def postTrip(request):
+    def post_trip(request):
         if request.method == 'POST':
             data = JSONParser().parse(request)
             trip_serializer = TripsSerializers(data=data)
 
             if trip_serializer.is_valid():
-                trip_item_object = trip_serializer.save()
+                trip_serializer.save()
                 return JsonResponse(trip_serializer.data, status=status.HTTP_201_CREATED)
 
             return JsonResponse(trip_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

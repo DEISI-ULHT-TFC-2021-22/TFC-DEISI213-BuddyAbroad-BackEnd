@@ -18,6 +18,14 @@ class LanguageSerializer(serializers.ModelSerializer):
         ]
 
 
+class InterestCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterestCategories
+        fields = [
+            'name'
+        ]
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     interests,languages = InterestsSerializer(many=True),LanguageSerializer(many=True)
