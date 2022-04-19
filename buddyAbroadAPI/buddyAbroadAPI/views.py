@@ -204,6 +204,63 @@ class UsersAPI(APIView):
         except client.exceptions.NotAuthorizedException:
             return Response('Error: Incorrect username or password!')
 
+    @api_view(['POST'])
+    def forgot_password(request):
+        boto3.setup_default_session(region_name='eu-west-2')
+        client = boto3.client('cognito-idp')
+
+        key = bytes(env.str('APP_CLIENT_SECRET'), "utf-8")
+        msg = bytes(request.data['username'] + env.str('AWS_CLIENT_ID'), "utf-8")
+        new_digest = hmac.new(key, msg, hashlib.sha256).digest()
+        SECRET_HASH = base64.b64encode(new_digest).decode()
+
+        response = client.forgot_password(
+            ClientId=env.str('AWS_CLIENT_ID'),
+            Username=request.data['username'],
+            SecretHash=SECRET_HASH
+        )
+        return Response({
+            'response': response,
+        })
+
+    @api_view(['POST'])
+    def confirm_forgot_password(request):
+        boto3.setup_default_session(region_name='eu-west-2')
+        client = boto3.client('cognito-idp')
+
+        key = bytes(env.str('APP_CLIENT_SECRET'), "utf-8")
+        msg = bytes(request.data['username'] + env.str('AWS_CLIENT_ID'), "utf-8")
+        new_digest = hmac.new(key, msg, hashlib.sha256).digest()
+        SECRET_HASH = base64.b64encode(new_digest).decode()
+
+        confirm_code = '579279'
+        password = "12345678"
+
+        response = client.confirm_forgot_password(
+            ClientId=env.str('AWS_CLIENT_ID'),
+            Username=request.data['username'],
+            ConfirmationCode=confirm_code,
+            Password=password,
+            SecretHash=SECRET_HASH
+        )
+        return Response({
+            'response': response,
+        })
+
+    @api_view(['POST'])
+    def change_password(request):
+        boto3.setup_default_session(region_name='eu-west-2')
+        client = boto3.client('cognito-idp')
+
+        response = client.change_password(
+            PreviousPassword=request.data['previous_password'],
+            ProposedPassword=request.data['proposed_password'],
+            AccessToken=request.data['access_token'],
+        )
+        return Response({
+            'response': response,
+        })
+
 
 class TripsAPI(generics.ListCreateAPIView):
     test_param = openapi.Parameter('test', openapi.IN_QUERY, description="test manual param", type=openapi.TYPE_BOOLEAN)
