@@ -286,16 +286,36 @@ class TripsAPI(generics.ListCreateAPIView):
         trips_serializer = TripsSerializers(trips, many=True)
         return Response(trips_serializer.data)
 
-    @api_view(['GET'])
-    def get_trip_by_id(request, id):
-        trips = Trips.objects.all().filter(pk=id)
-        if len(trips) > 0:
-            trips_serializer = TripsSerializers(trips, many=True)
-            return Response(trips_serializer.data)
-        else:
-            return Response({
-                'msg': 'Não existem trips que correspondem com o id ' + str(id)
-            })
+    @api_view(['GET', 'PUT', 'DELETE'])
+    def trip_get_update_delete(request, id):
+        if request.method == 'GET':
+            trips = Trips.objects.all().filter(pk=id)
+            if len(trips) > 0:
+                trips_serializer = TripsSerializers(trips, many=True)
+                return Response(trips_serializer.data)
+            else:
+                return Response({
+                    'msg': 'Não existem trips que correspondem com o id ' + str(id)
+                })
+        elif request.method == 'PUT':
+            if id:
+                trips = Trips.objects.get(pk=id)
+                trips_serializer = TripsSerializers(instance=trips, data=request.data)
+                if trips_serializer.is_valid():
+                    # Updating trips
+                    trips_serializer.save()
+                    return Response(trips_serializer.data, status=200)
+                return Response(trips_serializer.errors, status=400)
+            return Response('Missing ID', status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'DELETE':
+            trips = Trips.objects.get(pk=id)
+            operation = trips.delete()
+            data = {}
+            if operation:
+                data['success'] = 'delete successful'
+            else:
+                data['failure'] = 'delete failed'
+            return Response(data=data)
 
     @api_view(['POST'])
     def post_trip(request):

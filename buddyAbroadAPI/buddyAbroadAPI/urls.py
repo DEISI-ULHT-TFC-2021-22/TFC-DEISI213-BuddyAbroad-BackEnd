@@ -21,7 +21,7 @@ urlpatterns = [
     path('login/', UsersAPI.login_auth,name='login_auth'),
     path('trips/', TripsAPI.get_trips, name='trips'),
     path('postTrips/', TripsAPI.post_trip, name='post_trips'),
-    path('getTrip/<int:id>',TripsAPI.get_trip_by_id),
+    path('trips/<int:id>',TripsAPI.trip_get_update_delete, name='trip_get_update_delete'),
     path('interests/', InterestsAPI.as_view()),
     path('translate/', AwsTranslate.translate,name='translate'),
     path('usersEmail/<str:email>', UsersAPI.get_user_by_email, name='get_user_by_email'),
