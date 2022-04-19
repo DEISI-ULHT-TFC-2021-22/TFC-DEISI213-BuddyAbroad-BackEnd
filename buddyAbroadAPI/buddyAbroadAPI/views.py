@@ -356,9 +356,17 @@ class AwsTranslate:
 def api_root(request, format=None):
     return Response({
         'Users': reverse('users', request=request, format=format),
+        #'Users Get Update Delete by id': reverse('user_get_update_delete', request=request, format=format),
+        'Trips': reverse('trips', request=request, format=format),
+        #'Users by Email': reverse('get_user_by_email', request=request, format=format),
+        'Post Trips': reverse('post_trips', request=request, format=format),
+        #'Trips Get Update Delete by id': reverse('trip_get_update_delete', request=request, format=format),
         'Signup': reverse('sign_up', request=request, format=format),
         'Confirm Signup': reverse('confirm_sign_up', request=request, format=format),
         'Login': reverse('login_auth', request=request, format=format),
+        'Forgot Password': reverse('forgot_password', request=request, format=format),
+        'Confirm Forgot Password': reverse('confirm_forgot_password', request=request, format=format),
+        'Change Password': reverse('change_password', request=request, format=format),
         'Translate': reverse('translate', request=request, format=format),
         'documentation': reverse('schema-swagger-ui', request=request, format=format),
     })

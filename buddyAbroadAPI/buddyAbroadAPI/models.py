@@ -35,6 +35,7 @@ class Trips(models.Model):
     description = models.CharField(max_length=45, blank=True, null=True)
     rating = models.IntegerField(blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
+    image = models.CharField(max_length=200, blank=True, null=True)
     location = models.CharField(max_length=45, blank=True, null=True)
     details = models.CharField(max_length=45, blank=True, null=True)
     maxsize = models.IntegerField(db_column='maxSize', blank=True, null=True)  # Field name made lowercase.
@@ -95,9 +96,9 @@ class UserTrips(models.Model):
 
 class Users(models.Model):
     name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100, unique=True)
+    email = models.CharField(max_length=100)
     dob = models.CharField(max_length=100)
-    phone = models.CharField(max_length=50, unique=True)
+    phone = models.CharField(max_length=50)
     image = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(max_length=100, blank=True, null=True)
     rating = models.IntegerField(blank=True, null=True)
