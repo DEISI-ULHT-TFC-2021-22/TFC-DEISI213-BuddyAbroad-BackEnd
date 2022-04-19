@@ -109,7 +109,7 @@ class UsersAPI(APIView):
                     },
                     {
                         'Name': "name",
-                        'Value': request.data['name']
+                        'Value': ""
                     }
                 ])
 
