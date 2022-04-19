@@ -16,6 +16,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('users/', UsersAPI.users_list_create, name='users'),
     path('users/<int:id>', UsersAPI.user_get_update_delete, name='user_get_update_delete'),
+    path('interests/', UsersAPI.get_interests_by_categories, name='get_interests_by_categories'),
     path('signup/', UsersAPI.sign_up, name='sign_up'),
     path('confirmAccount/', UsersAPI.confirm_sign_up, name='confirm_sign_up'),
     path('login/', UsersAPI.login_auth, name='login_auth'),

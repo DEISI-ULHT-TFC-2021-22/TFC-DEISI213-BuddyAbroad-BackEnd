@@ -77,6 +77,29 @@ class UsersAPI(APIView):
                 user_serializer = UserSerializer(user)
                 return Response(user_serializer.data, status=200)
 
+    @api_view(['POST'])
+    def get_interests_by_categories(request):
+        if request.method == 'POST':
+            categories = InterestCategories.objects.all()
+            interests = Interests.objects.all()
+            interests2 = []
+            exists = 0
+
+            for category in categories:
+                if category.name == request.data['category']:
+                    exists = 1
+                    category_id = category.id
+
+            if exists:
+                for interest in interests:
+                    if interest.category_id == category_id:
+                        interests2.append(interest)
+
+                interests_serializer = InterestsSerializer(interests2, many=True)
+                return Response(interests_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response('Category does not exist')
+
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
