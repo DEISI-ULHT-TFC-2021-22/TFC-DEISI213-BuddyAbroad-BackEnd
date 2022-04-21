@@ -64,9 +64,9 @@ class UsersAPI(APIView):
             operation = user.delete()
             data = {}
             if operation:
-                data['success'] = 'delete successful'
+                data['success'] = 'Delete successful'
             else:
-                data['failure'] = 'delete failed'
+                data['failure'] = 'Delete failed'
             return Response(data=data)
 
     @api_view(['GET'])
@@ -143,13 +143,13 @@ class UsersAPI(APIView):
                 })
 
         except client.exceptions.InvalidPasswordException:
-            return Response('Error:Invalid Password! Password must have length 8 with numbers and special characters')
+            return Response('Error:Invalid password! Password must have length 8 with numbers and special characters')
         except client.exceptions.UsernameExistsException:
             return Response('Error:Username already exists!')
         except client.exceptions.ResourceNotFoundException:
-            return Response('Error:Resource Not Found!')
+            return Response('Error:Resource not found')
         except client.exceptions.CodeDeliveryFailureException:
-            return Response('Error:Code has not delivery!')
+            return Response('Error:Code has not been delivered')
 
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -182,11 +182,11 @@ class UsersAPI(APIView):
                 'response': response
             })
         except client.exceptions.CodeMismatchException:
-            return Response('Error: Code Mismatch!')
+            return Response('Error: Code mismatch')
         except client.exceptions.ExpiredCodeException:
-            return Response('Error: Code has Expired')
+            return Response('Error: Code has expired')
         except client.exceptions.UserNotFoundException:
-            return Response('Error: User Not Found!')
+            return Response('Error: User not found')
 
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -221,7 +221,7 @@ class UsersAPI(APIView):
                 'response': response,
             })
         except client.exceptions.UserNotFoundException:
-            return Response('Error: User Not Found!')
+            return Response('Error: User not found')
         except client.exceptions.UserNotConfirmedException:
             return Response('Error: User not confirmed')
         except client.exceptions.NotAuthorizedException:
@@ -236,15 +236,19 @@ class UsersAPI(APIView):
         msg = bytes(request.data['username'] + env.str('AWS_CLIENT_ID'), "utf-8")
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
         SECRET_HASH = base64.b64encode(new_digest).decode()
-
-        response = client.forgot_password(
-            ClientId=env.str('AWS_CLIENT_ID'),
-            Username=request.data['username'],
-            SecretHash=SECRET_HASH
-        )
-        return Response({
-            'response': response,
-        })
+        try:
+            response = client.forgot_password(
+                ClientId=env.str('AWS_CLIENT_ID'),
+                Username=request.data['username'],
+                SecretHash=SECRET_HASH
+            )
+            return Response({
+                'response': response,
+            })
+        except client.exceptions.CodeDeliveryFailureException:
+            return Response('Error: Code delivery failure')
+        except client.exceptions.UserNotFoundException:
+            return Response('Error: User not found')
 
     @api_view(['POST'])
     def confirm_forgot_password(request):
@@ -256,103 +260,43 @@ class UsersAPI(APIView):
         new_digest = hmac.new(key, msg, hashlib.sha256).digest()
         SECRET_HASH = base64.b64encode(new_digest).decode()
 
-        confirm_code = '579279'
-        password = "12345678"
-
-        response = client.confirm_forgot_password(
-            ClientId=env.str('AWS_CLIENT_ID'),
-            Username=request.data['username'],
-            ConfirmationCode=confirm_code,
-            Password=password,
-            SecretHash=SECRET_HASH
-        )
-        return Response({
-            'response': response,
-        })
+        try:
+            response = client.confirm_forgot_password(
+                ClientId=env.str('AWS_CLIENT_ID'),
+                Username=request.data['username'],
+                ConfirmationCode=request.data['confirm_code'],
+                Password=request.data['password'],
+                SecretHash=SECRET_HASH
+            )
+            return Response({
+                'response': response,
+            })
+        except client.exceptions.CodeMismatchException:
+            return Response('Error: Confirmation code does not match')
+        except client.exceptions.ExpiredCodeException:
+            return Response('Error: Confirmation code has expired')
+        except client.exceptions.InvalidPasswordException:
+            return Response('Error: Invalid password')
+        except client.exceptions.UserNotFoundException:
+            return Response('Error: User not found')
 
     @api_view(['POST'])
     def change_password(request):
         boto3.setup_default_session(region_name='eu-west-2')
         client = boto3.client('cognito-idp')
-
-        response = client.change_password(
-            PreviousPassword=request.data['previous_password'],
-            ProposedPassword=request.data['proposed_password'],
-            AccessToken=request.data['access_token'],
-        )
-        return Response({
-            'response': response,
-        })
-
-
-class TripsAPI(generics.ListCreateAPIView):
-    test_param = openapi.Parameter('test', openapi.IN_QUERY, description="test manual param", type=openapi.TYPE_BOOLEAN)
-    trips_response = openapi.Response('response description', TripsSerializers)
-
-    @swagger_auto_schema(method='get',
-                         manual_parameters=[test_param],
-                         responses={200: trips_response})
-    @api_view(['GET'])
-    def get_trips(request):
-        trips = Trips.objects.all()
-        boto3.setup_default_session(region_name='eu-west-2')
-        client = boto3.client('s3')
-        for trip in trips:
-            try:
-                response = client.generate_presigned_url(ClientMethod='get_object',
-                                                         Params={'Bucket': 'buddy-abroad',
-                                                                 'Key': '' + trip.principal_image},
-                                                         ExpiresIn=3600)
-                trip.principal_image = response
-            except ClientError as e:
-                return Response(e)
-        trips_serializer = TripsSerializers(trips, many=True)
-        return Response(trips_serializer.data)
-
-    @api_view(['GET', 'PUT', 'DELETE'])
-    def trip_get_update_delete(request, id):
-        if request.method == 'GET':
-            trips = Trips.objects.all().filter(pk=id)
-            if len(trips) > 0:
-                trips_serializer = TripsSerializers(trips, many=True)
-                return Response(trips_serializer.data)
-            else:
-                return Response({
-                    'msg': 'Não existem trips que correspondem com o id ' + str(id)
-                })
-        elif request.method == 'PUT':
-            if id:
-                trips = Trips.objects.get(pk=id)
-                trips_serializer = TripsSerializers(instance=trips, data=request.data)
-                if trips_serializer.is_valid():
-                    # Updating trips
-                    trips_serializer.save()
-                    return Response(trips_serializer.data, status=200)
-                return Response(trips_serializer.errors, status=400)
-            return Response('Missing ID', status=status.HTTP_400_BAD_REQUEST)
-        elif request.method == 'DELETE':
-            trips = Trips.objects.get(pk=id)
-            operation = trips.delete()
-            data = {}
-            if operation:
-                data['success'] = 'delete successful'
-            else:
-                data['failure'] = 'delete failed'
-            return Response(data=data)
-
-    @api_view(['POST'])
-    def post_trip(request):
-        if request.method == 'POST':
-            data = JSONParser().parse(request)
-            trip_serializer = TripsSerializers(data=data)
-
-            if trip_serializer.is_valid():
-                trip_serializer.save()
-                return JsonResponse(trip_serializer.data, status=status.HTTP_201_CREATED)
-
-            return JsonResponse(trip_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return JsonResponse("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            response = client.change_password(
+                PreviousPassword=request.data['previous_password'],
+                ProposedPassword=request.data['proposed_password'],
+                AccessToken=request.data['access_token'],
+            )
+            return Response({
+                'response': response,
+            })
+        except client.exceptions.InvalidPasswordException:
+            return Response('Error: Invalid password')
+        except client.exceptions.UserNotFoundException:
+            return Response('Error: User not found')
 
 
 class InterestsAPI(generics.ListCreateAPIView):
@@ -382,7 +326,7 @@ def api_root(request, format=None):
         #'Users Get Update Delete by id': reverse('user_get_update_delete', request=request, format=format),
         'Trips': reverse('trips', request=request, format=format),
         #'Users by Email': reverse('get_user_by_email', request=request, format=format),
-        'Post Trips': reverse('post_trips', request=request, format=format),
+        'Post Trip': reverse('post_trip', request=request, format=format),
         #'Trips Get Update Delete by id': reverse('trip_get_update_delete', request=request, format=format),
         'Signup': reverse('sign_up', request=request, format=format),
         'Confirm Signup': reverse('confirm_sign_up', request=request, format=format),

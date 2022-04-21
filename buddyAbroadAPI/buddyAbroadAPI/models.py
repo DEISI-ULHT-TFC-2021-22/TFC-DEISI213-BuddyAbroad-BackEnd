@@ -85,7 +85,6 @@ class UserTrips(models.Model):
     time = models.TimeField(blank=True, null=True)
     status = models.CharField(max_length=45, blank=True, null=True)
     groupsize = models.IntegerField(db_column='groupSize', blank=True, null=True)  # Field name made lowercase.
-    user_tripscol = models.CharField(max_length=45, blank=True, null=True)
     guide = models.ForeignKey('Users',models.DO_NOTHING)
     tourist = models.ForeignKey('Users',models.DO_NOTHING,related_name="tourist")
     reference = models.ForeignKey(Trips, models.DO_NOTHING)

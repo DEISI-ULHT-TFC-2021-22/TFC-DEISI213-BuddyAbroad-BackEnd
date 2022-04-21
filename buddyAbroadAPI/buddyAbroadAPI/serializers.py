@@ -27,8 +27,7 @@ class InterestCategoriesSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
-    interests,languages = InterestsSerializer(many=True),LanguageSerializer(many=True)
+    interests, languages = InterestsSerializer(many=True), LanguageSerializer(many=True)
 
     class Meta:
         model = Users
@@ -53,11 +52,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-    def update(self,instance,validated_data):
+    def update(self, instance, validated_data):
         interests_data = validated_data.pop('interests')
         languages_data = validated_data.pop('languages')
 
-        instance = super().update(instance,validated_data)
+        instance = super().update(instance, validated_data)
         instance.interests.clear()
         instance.languages.clear()
 

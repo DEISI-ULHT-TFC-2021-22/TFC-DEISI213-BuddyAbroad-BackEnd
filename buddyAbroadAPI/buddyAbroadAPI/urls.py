@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views as views
+from .TripsAPI import TripsAPI
 from .views import *
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -21,7 +22,7 @@ urlpatterns = [
     path('confirmAccount/', UsersAPI.confirm_sign_up, name='confirm_sign_up'),
     path('login/', UsersAPI.login_auth, name='login_auth'),
     path('trips/', TripsAPI.get_trips, name='trips'),
-    path('postTrips/', TripsAPI.post_trip, name='post_trips'),
+    path('postTrip/', TripsAPI.post_trip, name='post_trip'),
     path('trips/<int:id>', TripsAPI.trip_get_update_delete, name='trip_get_update_delete'),
     path('translate/', AwsTranslate.translate, name='translate'),
     path('usersEmail/<str:email>', UsersAPI.get_user_by_email, name='get_user_by_email'),
