@@ -1,1 +1,1 @@
-# AWS_Buddy_Abroad
+# Buddy Abroad BackEnd
