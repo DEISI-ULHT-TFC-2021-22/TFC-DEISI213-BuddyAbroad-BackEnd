@@ -11,7 +11,7 @@ Video de apresentação do projeto: https://www.youtube.com/watch?v=w5-AGD1vTt4
 
 # Método de Utilização
 
-1 - Abrir o cmd.exe na pasta  ...\buddy-abroad-api\buddyAbroadAPI
-2 - Executar o comando pipenv shell
-3 - De seguida voltar à pasta ...\buddy-abroad-api\buddyAbroadAPI e executar o comando py manage.py runserver
+1 - Abrir o cmd.exe na pasta  ...\buddy-abroad-api\buddyAbroadAPI<br/>
+2 - Executar o comando pipenv shell<br/>
+3 - De seguida voltar à pasta ...\buddy-abroad-api\buddyAbroadAPI e executar o comando py manage.py runserver<br/>
 4 - Fazer pedidos HTTP à nossa API através dos urls presentes na api.root
