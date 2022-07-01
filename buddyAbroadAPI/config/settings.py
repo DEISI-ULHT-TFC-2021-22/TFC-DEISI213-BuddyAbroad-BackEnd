@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'NAME': env.str('NAME'),
         'USER': env.str('USER'),
         'PASSWORD': env.str('PASSWORD'),
