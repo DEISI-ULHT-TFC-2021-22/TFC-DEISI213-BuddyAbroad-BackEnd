@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+environs = {version = "==8.0.0", extras = ["django"]}
+mysqlclient = "*"
+django = "*"
+djangorestframework = "*"
+boto3 = "*"
+drf-yasg = "*"
+django-cors-headers = "*"
+djangorestframework-gis = "*"
+django-storages = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

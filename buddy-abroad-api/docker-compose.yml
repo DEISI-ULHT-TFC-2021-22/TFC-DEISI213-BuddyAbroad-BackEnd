@@ -1,0 +1,11 @@
+version: '3'
+services:
+  api-buddy:
+    container_name: api-buddy
+    restart: always
+    image: api-buddy:1.0
+    build: ./
+    ports:
+      - 80:8000
+    volumes:
+      - ~/.aws/:/root/.aws
