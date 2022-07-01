@@ -114,6 +114,14 @@
             "index": "pypi",
             "version": "==3.13.1"
         },
+         "djangorestframework-gis": {
+            "hashes": [
+                "sha256:921c5adbc9a7c0502c905957a6695b67f55d7bf6582e1ab837888b55a1fce5a6",
+                "sha256:bb715f05a111c02b9acc4021b17566e40c0b90dd833c583bac3d67f92be9667d"
+            ],
+            "index": "pypi",
+            "version": "==1.0"
+        },
         "drf-yasg": {
             "hashes": [
                 "sha256:8b72e5b1875931a8d11af407be3a9a5ba8776541492947a0df5bafda6b7f8267",
