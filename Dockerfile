@@ -5,6 +5,10 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 RUN unzip awscliv2.zip
 RUN ./aws/install
 
+RUN apt-get update -y
+RUN apt-get install binutils libproj-dev gdal-bin -y
+
+
 WORKDIR /app
 RUN pip install pipenv
 COPY Pipfile* ./
