@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'buddyAbroadAPI',
     'rest_framework',
+    'rest_framework_gis',
     'corsheaders',
 ]
 
